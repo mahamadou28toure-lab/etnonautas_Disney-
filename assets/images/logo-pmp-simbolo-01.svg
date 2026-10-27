@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 560" width="100%" height="100%">
+  <!-- Standalone Symbol matching Marca gráfica PMP-Símbolo-01.png -->
+  <g transform="translate(-150, -30)">
+    <!-- Outer Pink Airplane Window Frame (#EC4689) -->
+    <rect
+      x="210"
+      y="64"
+      width="380"
+      height="452"
+      rx="154"
+      ry="154"
+      fill="#FFFFFF"
+      stroke="#EC4689"
+      stroke-width="16"
+    />
+
+    <!-- Inner Royal Blue Airplane Window Frame (#233975) -->
+    <rect
+      x="246"
+      y="100"
+      width="308"
+      height="380"
+      rx="118"
+      ry="118"
+      fill="none"
+      stroke="#233975"
+      stroke-width="9"
+    />
+
+    <!-- Three 4-Pointed Royal Blue Stars (#233975) -->
+    <path
+      d="M 426 130 Q 426 148 444 148 Q 426 148 426 166 Q 426 148 408 148 Q 426 148 426 130 Z"
+      fill="#233975"
+      stroke="#233975"
+      stroke-width="2.5"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M 386 180 Q 386 198 404 198 Q 386 198 386 216 Q 386 198 368 198 Q 386 198 386 180 Z"
+      fill="#233975"
+      stroke="#233975"
+      stroke-width="2.5"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M 516 192 Q 516 210 534 210 Q 516 210 516 228 Q 516 210 498 210 Q 516 210 516 192 Z"
+      fill="#233975"
+      stroke="#233975"
+      stroke-width="2.5"
+      stroke-linejoin="round"
+    />
+
+    <!-- Pink Line-Art: Eiffel Tower & Disneyland Castle (#EC4689) -->
+    <g
+      fill="none"
+      stroke="#EC4689"
+      stroke-width="7.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <!-- EIFFEL TOWER (Left) -->
+      <line x1="316" y1="176" x2="316" y2="192" />
+      <path d="M 304 210 C 304 192, 328 192, 328 210" />
+      <line x1="302" y1="210" x2="330" y2="210" />
+      <path d="M 306 210 Q 301 270 290 324" />
+      <path d="M 326 210 Q 331 270 342 324" />
+      <line x1="286" y1="324" x2="346" y2="324" />
+      <path d="M 290 324 Q 277 380 256 425" />
+      <path d="M 342 324 Q 354 380 370 436" />
+      <polygon points="316,342 296,402 336,402" />
+      <path d="M 277 438 C 277 400, 355 400, 355 438" />
+
+      <!-- DISNEYLAND CASTLE (Right) -->
+      <!-- Left Turret -->
+      <path d="M 360 369 Q 377 342 385 302 Q 393 342 410 369 Z" />
+      <line x1="358" y1="369" x2="412" y2="369" />
+      <line x1="366" y1="369" x2="366" y2="438" />
+      <line x1="405" y1="369" x2="405" y2="386" />
+
+      <!-- Mid-Left Back Turret -->
+      <polygon points="402,280 439,280 427,246 415,246" />
+      <line x1="399" y1="280" x2="442" y2="280" />
+      <line x1="406" y1="280" x2="406" y2="348" />
+      <line x1="436" y1="280" x2="436" y2="310" />
+
+      <!-- Tall Main Spire -->
+      <path d="M 452 178 Q 464 148 470 116 Q 476 148 488 178 Z" />
+      <line x1="450" y1="178" x2="490" y2="178" />
+      <line x1="456" y1="178" x2="456" y2="230" />
+      <line x1="484" y1="178" x2="484" y2="230" />
+      <polygon points="449,230 491,230 495,244 445,244" />
+      <line x1="449" y1="244" x2="449" y2="305" />
+      <line x1="491" y1="244" x2="491" y2="332" />
+
+      <!-- Center Gatehouse -->
+      <path d="M 421 345 L 445 302 L 461 302 L 485 345" />
+      <line x1="421" y1="345" x2="441" y2="345" />
+      <line x1="465" y1="345" x2="485" y2="345" />
+      <ellipse cx="453" cy="334" rx="7.5" ry="11" />
+      <line x1="425" y1="345" x2="425" y2="380" />
+      <path d="M 410 438 C 410 394, 428 369, 453 356 C 478 369, 496 394, 496 438" />
+      <path d="M 426 438 C 426 404, 440 385, 453 374 C 466 385, 480 404, 480 438" />
+
+      <!-- Right Turret -->
+      <path d="M 488 368 Q 504 340 511 302 Q 518 340 534 368 Z" />
+      <line x1="486" y1="368" x2="536" y2="368" />
+      <line x1="528" y1="368" x2="528" y2="438" />
+    </g>
+
+    <!-- Navy Blue Ground Baseline & Window Sill Line (#233975) -->
+    <line
+      x1="260"
+      y1="439"
+      x2="540"
+      y2="439"
+      stroke="#233975"
+      stroke-width="9"
+      stroke-linecap="round"
+    />
+    <line
+      x1="346"
+      y1="460"
+      x2="454"
+      y2="460"
+      stroke="#233975"
+      stroke-width="9"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>

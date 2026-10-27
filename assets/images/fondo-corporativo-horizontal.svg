@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="pmpCorporateGradient" x1="15%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#8D3B82" />
+      <stop offset="35%" stop-color="#6B357B" />
+      <stop offset="70%" stop-color="#3E3576" />
+      <stop offset="100%" stop-color="#233975" />
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#pmpCorporateGradient)" />
+</svg>

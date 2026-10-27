@@ -1,0 +1,6 @@
+{
+  "name": "Paris Magic Plan",
+  "description": "Servicio especializado en la planificación y organización personalizada de viajes a Disneyland Paris para familias y viajeros.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
