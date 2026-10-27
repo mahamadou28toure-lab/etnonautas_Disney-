@@ -559,7 +559,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (planSubmitLabel) planSubmitLabel.textContent = 'Enviando solicitud...';
 
       try {
-        const response = await fetch('/api/plan', {
+        let planEndpoint = '/api/plan';
+        let response = await fetch(planEndpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -568,14 +569,46 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify(payload),
         });
 
-        const contentType = response.headers.get('content-type') || '';
+        let rawText = '';
+        try {
+          rawText = await response.text();
+        } catch (e) {
+          console.warn('Error leyendo respuesta de /api/plan:', e);
+        }
+
         let data = {};
-        if (contentType.includes('application/json')) {
-          data = await response.json();
+        let isJson = false;
+        if (rawText && rawText.trim()) {
+          try {
+            data = JSON.parse(rawText);
+            isJson = true;
+          } catch {
+            isJson = false;
+          }
+        }
+
+        // Si /api/plan devuelve 404 o 405 (o no-JSON), probar fallback a /api/plan.js
+        if (!isJson && (response.status === 404 || response.status === 405)) {
+          try {
+            const fallbackResp = await fetch('/api/plan.js', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+              body: JSON.stringify(payload),
+            });
+            const fallbackText = await fallbackResp.text();
+            try {
+              data = JSON.parse(fallbackText);
+              response = fallbackResp;
+              isJson = true;
+            } catch {}
+          } catch {}
         }
 
         if (!response.ok || !data.success) {
-          const errText = data.error || 'No se pudo registrar la solicitud en el servidor. Por favor, inténtalo de nuevo.';
+          const errText = data.error || (isJson ? 'No se pudo registrar la solicitud.' : `Error del servidor (${response.status}). Por favor, contáctanos.`);
           showPlanError(`Error: ${errText}`);
           return;
         }
@@ -741,7 +774,36 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   const chatToggleBtn = document.getElementById('chat-toggle-btn');
   const chatWindow = document.getElementById('chat-window');
+  const chatResetBtn = document.getElementById('chat-reset-btn');
   const chatCloseBtn = document.getElementById('chat-close-btn');
+
+  if (chatResetBtn) {
+    chatResetBtn.addEventListener('click', () => {
+      chatHistory.length = 0;
+      if (chatAlertBanner) chatAlertBanner.style.display = 'none';
+      if (chatMessages) {
+        chatMessages.innerHTML = `
+          <div class="chat-msg chat-msg--assistant">
+            <div class="chat-msg__avatar">
+              <img src="assets/images/marca-grafica-pmp-simbolo-01.svg" alt="" aria-hidden="true" />
+            </div>
+            <div class="chat-msg__bubble">
+              <p>¡Hola! ✨ Te doy la bienvenida a <strong>Paris Magic Plan</strong>.</p>
+              <p>Estoy aquí para guiarte y responder todas las dudas que tengas sobre la web o tu viaje a Disneyland Paris. ¿En qué puedo ayudarte hoy?</p>
+            </div>
+          </div>
+        `;
+      }
+      if (chatInput) {
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+        chatInput.focus();
+      }
+      if (chatCharCounter) {
+        chatCharCounter.textContent = '0/1000';
+      }
+    });
+  }
   const chatMessages = document.getElementById('chat-messages');
   const chatForm = document.getElementById('chat-form');
   const chatInput = document.getElementById('chat-input');
@@ -822,48 +884,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Negritas: **texto**
     clean = clean.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Cursivas: *texto* o _texto_
+    clean = clean.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, '$1<em>$2</em>$3');
 
-    // Listas: líneas que empiezan por * o -
     const lines = clean.split('\n');
-    let inList = false;
+    let inUl = false;
+    let inOl = false;
     let html = '';
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
-      const listMatch = line.match(/^[\*\-]\s+(.*)$/);
+      const bulletMatch = line.match(/^[\*\-]\s+(.*)$/);
+      const numberMatch = line.match(/^(\d+)\.\s+(.*)$/);
+      const headerMatch = line.match(/^#{1,4}\s+(.*)$/);
 
-      if (listMatch) {
-        if (!inList) {
-          html += '<ul>';
-          inList = true;
-        }
-        html += `<li>${listMatch[1]}</li>`;
+      if (headerMatch) {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (inOl) { html += '</ol>'; inOl = false; }
+        html += `<h4 class="chat-msg__heading" style="margin: 10px 0 4px; font-size: 0.95rem; font-weight: 700; color: #1e1b4b;">${headerMatch[1]}</h4>`;
+      } else if (bulletMatch) {
+        if (inOl) { html += '</ol>'; inOl = false; }
+        if (!inUl) { html += '<ul>'; inUl = true; }
+        html += `<li>${bulletMatch[1]}</li>`;
+      } else if (numberMatch) {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (!inOl) { html += '<ol style="padding-left: 20px; margin: 6px 0;">'; inOl = true; }
+        html += `<li style="margin-bottom: 4px;">${numberMatch[2]}</li>`;
       } else {
-        if (inList) {
-          html += '</ul>';
-          inList = false;
-        }
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (inOl) { html += '</ol>'; inOl = false; }
         if (line.length > 0) {
           html += `<p>${line}</p>`;
         }
       }
     }
-    if (inList) {
-      html += '</ul>';
-    }
+    if (inUl) html += '</ul>';
+    if (inOl) html += '</ol>';
 
     // Detección de botones de acción recomendados
     const lower = markdown.toLowerCase();
     let actionButtons = '';
-    if (lower.includes('planificar') || lower.includes('presupuesto')) {
-      actionButtons += `<button type="button" class="chat-msg__action-btn" data-chat-modal="plan">Abrir formulario: Planificar viaje</button> `;
+    if (lower.includes('planificar') || lower.includes('presupuesto') || lower.includes('propuesta')) {
+      actionButtons += `<button type="button" class="chat-msg__action-btn" data-chat-modal="plan">Quiero planificar mi viaje</button> `;
     }
     if (lower.includes('duda') || lower.includes('contacto') || lower.includes('equipo')) {
       actionButtons += `<button type="button" class="chat-msg__action-btn" data-chat-modal="question">Pregunta cualquier duda</button>`;
     }
 
     if (actionButtons) {
-      html += `<div style="margin-top: 10px;">${actionButtons}</div>`;
+      html += `<div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;">${actionButtons}</div>`;
     }
 
     return html || `<p>${clean}</p>`;
@@ -944,41 +1013,92 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollChatToBottom();
 
     try {
-      const response = await fetch('/api/chat', {
+      const payload = JSON.stringify({
+        message: text,
+        history: chatHistory.slice(-8), // Enviar máximo los últimos 8 mensajes
+      });
+
+      // Intento principal: /api/chat
+      let endpointUsed = '/api/chat';
+      let response = await fetch(endpointUsed, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({
-          message: text,
-          history: chatHistory.slice(-8), // Enviar máximo los últimos 8 mensajes
-        }),
+        body: payload,
       });
 
-      const contentType = response.headers.get('content-type') || '';
+      let rawText = '';
+      try {
+        rawText = await response.text();
+      } catch (readErr) {
+        console.warn('No se pudo leer la respuesta de', endpointUsed, readErr);
+      }
+
       let data = {};
       let isJson = false;
-
-      if (contentType.includes('application/json')) {
+      if (rawText && rawText.trim()) {
         try {
-          data = await response.json();
+          data = JSON.parse(rawText);
           isJson = true;
-        } catch (jsonErr) {
-          console.error('Error al analizar JSON devuelto por /api/chat:', jsonErr);
+        } catch {
+          isJson = false;
         }
       }
 
-      // Si la respuesta no es JSON (ej. Vercel sirvió HTML estático por mala ruta o error de servidor)
+      // Si /api/chat devolvió 404 o 405 (o contenido HTML no JSON), probar fallback a /api/chat.js
+      if ((!isJson || response.status === 404 || response.status === 405) && endpointUsed === '/api/chat') {
+        console.warn(`[Chat] ${endpointUsed} devolvió status ${response.status} (no JSON). Probando fallback a /api/chat.js...`);
+        try {
+          const fallbackResponse = await fetch('/api/chat.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: payload,
+          });
+
+          const fallbackText = await fallbackResponse.text();
+          try {
+            const fallbackData = JSON.parse(fallbackText);
+            response = fallbackResponse;
+            data = fallbackData;
+            rawText = fallbackText;
+            isJson = true;
+            endpointUsed = '/api/chat.js';
+          } catch {
+            // El fallback tampoco devolvió JSON
+          }
+        } catch (fallbackErr) {
+          console.warn('[Chat] Fallback a /api/chat.js falló:', fallbackErr);
+        }
+      }
+
+      // Si la respuesta definitiva sigue sin ser JSON
       if (!isJson) {
-        console.warn('El endpoint /api/chat no devolvió JSON. Status:', response.status, 'Content-Type:', contentType);
+        console.error(`[Chat Error] El endpoint ${endpointUsed} devolvió status ${response.status} sin formato JSON:`, rawText.slice(0, 200));
+
+        let diagnosticDetail = '';
+        if (response.status === 405) {
+          diagnosticDetail = 'Error 405 (Método no permitido): La ruta fue interceptada por el servidor estático en lugar de ejecutar la función serverless de Vercel. Despliega con el nuevo vercel.json sin reescrituras estáticas.';
+        } else if (response.status === 404) {
+          diagnosticDetail = 'Error 404 (No encontrado): La función de servidor no fue encontrada en /api/chat en Vercel.';
+        } else if (response.status === 504 || response.status === 502) {
+          diagnosticDetail = `Error ${response.status}: Tiempo de espera agotado en la función serverless de Vercel.`;
+        } else {
+          diagnosticDetail = `El servidor devolvió una respuesta HTTP ${response.status} con formato no compatible.`;
+        }
+
         if (chatAlertBanner && chatAlertMessage) {
-          chatAlertMessage.textContent = 'Función de servidor /api/chat no detectada como JSON en Vercel.';
+          chatAlertMessage.textContent = diagnosticDetail;
           chatAlertBanner.style.display = 'flex';
         }
+
         appendChatMessage(
           'assistant',
-          '⚠️ **Error de comunicación con el servidor**: El endpoint `/api/chat` devolvió un formato no compatible (posiblemente la función serverless de Vercel está iniciándose o la ruta fue interceptada por el servidor estático).\n\nAsegúrate de haber desplegado los cambios con el nuevo `vercel.json` y de configurar `GEMINI_API_KEY` en Vercel.'
+          `⚠️ **Error de comunicación con el servidor**: ${diagnosticDetail}\n\nRevisa la configuración de Vercel y asegúrate de que la variable \`GEMINI_API_KEY\` esté configurada en \`Project Settings > Environment Variables\`.`
         );
         return;
       }
@@ -998,6 +1118,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (response.status === 401 || data.code === 'INVALID_API_KEY') {
+          if (chatAlertBanner && chatAlertMessage) {
+            chatAlertMessage.textContent = 'Clave GEMINI_API_KEY no válida o caducada.';
+            chatAlertBanner.style.display = 'flex';
+          }
           appendChatMessage(
             'assistant',
             '🔑 **Clave no válida**: La clave `GEMINI_API_KEY` configurada en el servidor no es válida o ha caducado. Por favor, actualízala en el panel de Vercel (`Settings > Environment Variables`).'
@@ -1074,7 +1198,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Manejo de chips de preguntas frecuentes sugeridas
+  // Manejo de chips de preguntas frecuentes sugeridas (con delegación de eventos)
+  if (chatMessages) {
+    chatMessages.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chat-chip');
+      if (chip) {
+        e.preventDefault();
+        const question = chip.getAttribute('data-question') || chip.textContent.trim();
+        sendChatMessage(question);
+      }
+    });
+  }
+
   document.querySelectorAll('.chat-chip').forEach((chip) => {
     chip.addEventListener('click', (e) => {
       e.preventDefault();

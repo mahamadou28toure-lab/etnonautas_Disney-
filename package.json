@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "rm -rf dist && mkdir -p dist && cp -r index.html style.css script.js assets api robots.txt sitemap.xml dist/ 2>/dev/null || true",
+    "build": "rm -rf dist && mkdir -p dist && cp -r index.html style.css script.js assets robots.txt sitemap.xml dist/ 2>/dev/null || true",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "node --check script.js && node --check api/chat.js && node --check api/plan.js"

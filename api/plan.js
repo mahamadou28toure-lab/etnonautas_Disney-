@@ -6,12 +6,18 @@
  */
 
 function sendJson(res, statusCode, data) {
-  if (typeof res.status === 'function' && typeof res.json === 'function') {
-    return res.status(statusCode).json(data);
+  if (!res.headersSent) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
   }
-  res.statusCode = statusCode;
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(data));
+  if (typeof res.status === 'function') {
+    res.status(statusCode);
+    if (typeof res.json === 'function') {
+      return res.json(data);
+    }
+  } else {
+    res.statusCode = statusCode;
+  }
+  return res.end(JSON.stringify(data));
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,7 +26,7 @@ export default async function handler(req, res) {
   // Configuración de encabezados CORS y seguridad
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
 
   if (req.method === 'OPTIONS') {
     if (typeof res.status === 'function') {
@@ -37,9 +43,31 @@ export default async function handler(req, res) {
     });
   }
 
-  // Parsear y validar el cuerpo de la petición
+  // Parsear y validar el cuerpo de la petición de forma segura
   let body = req.body;
-  if (typeof body === 'string') {
+  if (!body && typeof req.on === 'function') {
+    try {
+      const chunks = [];
+      for await (const chunk of req) {
+        chunks.push(chunk);
+      }
+      const raw = Buffer.concat(chunks).toString('utf-8');
+      if (raw) {
+        body = JSON.parse(raw);
+      }
+    } catch {
+      body = {};
+    }
+  } else if (Buffer.isBuffer(body)) {
+    try {
+      body = JSON.parse(body.toString('utf-8'));
+    } catch {
+      return sendJson(res, 400, {
+        error: 'Cuerpo de solicitud JSON inválido.',
+        code: 'INVALID_JSON',
+      });
+    }
+  } else if (typeof body === 'string') {
     try {
       body = JSON.parse(body);
     } catch {
