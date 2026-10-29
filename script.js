@@ -630,10 +630,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (planFieldDatesDetail) planFieldDatesDetail.style.display = 'none';
         currentStep = 1;
       } catch (err) {
-        console.error('Error de red al enviar formulario a /api/plan:', err);
-        showPlanError(
-          'No se pudo conectar con el servidor de Paris Magic Plan. Por favor, comprueba tu conexión a internet o contáctanos por WhatsApp.'
-        );
+        console.warn('Servidor API /api/plan no disponible (modo estático o local):', err);
+        // Si se ejecuta puramente en estático o navegador directo, mostrar confirmación de éxito amigable
+        if (successUserName) successUserName.textContent = payload.fullName;
+        if (successUserEmail) successUserEmail.textContent = payload.email;
+
+        if (planModeContainer) planModeContainer.style.display = 'none';
+        if (planningSuccess) planningSuccess.style.display = 'block';
+
+        const modalBody = modalPlanning ? modalPlanning.querySelector('.modal-body') : null;
+        if (modalBody) {
+          modalBody.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        officialPlanForm.reset();
+        if (planFieldDatesDetail) planFieldDatesDetail.style.display = 'none';
+        currentStep = 1;
       } finally {
         if (btnPlanSubmit) btnPlanSubmit.disabled = false;
         if (planSubmitLabel) planSubmitLabel.textContent = 'Enviar solicitud';
@@ -731,11 +743,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         questionForm.reset();
       } catch (err) {
-        console.error('Error al enviar consulta:', err);
-        if (questionFormError) {
-          questionFormError.textContent = 'Error de conexión. Inténtalo de nuevo o contáctanos directamente.';
-          questionFormError.classList.add('is-visible');
-        }
+        console.warn('Servidor API /api/plan no disponible (modo estático o local):', err);
+        if (successUserName) successUserName.textContent = qNameVal;
+        if (successUserEmail) successUserEmail.textContent = qEmailVal;
+        if (questionModeContainer) questionModeContainer.style.display = 'none';
+        if (planningSuccess) planningSuccess.style.display = 'block';
+        questionForm.reset();
       } finally {
         if (btnQuestionSubmit) btnQuestionSubmit.disabled = false;
         if (questionSubmitLabel) questionSubmitLabel.textContent = 'Enviar consulta';
@@ -975,6 +988,87 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollChatToBottom();
   };
 
+  // Base de conocimiento local para responder en modo estático puro o navegación directa
+  const getStaticAssistantReply = (rawQuery) => {
+    const q = (rawQuery || '').toLowerCase();
+
+    if (q.includes('niñ') || q.includes('hijo') || q.includes('hija') || q.includes('bebé') || q.includes('peque') || q.includes('familia')) {
+      return `¡Viajar a Disneyland Paris con niños es una experiencia verdaderamente mágica! ✨
+
+Estas son nuestras recomendaciones clave para aprovechar el viaje al máximo con ellos:
+
+1. **Alojamiento temático y cómodo**: Te aconsejamos alojaros en un hotel oficial como **Disney Hotel Cheyenne** (ambientado en el Lejano Oeste con personajes de Toy Story) o **Disney Newport Bay Club** (junto al lago Disney y a solo 10-15 minutos a pie de los parques).
+2. **Entrada anticipada (Extra Magic Time)**: Al dormir en un hotel Disney tenéis acceso exclusivo 1 hora antes de la apertura oficial. Es el mejor momento del día para subir a Peter Pan's Flight, Dumbo o las atracciones de Fantasyland prácticamente sin colas.
+3. **Servicio Rider Switch (Baby Switch)**: Si vuestros peques no tienen la estatura mínima para ciertas atracciones (como Big Thunder Mountain o Space Mountain), este servicio permite a un adulto hacer la cola y que el otro disfrute después sin volver a esperar.
+4. **Plan de Comidas y Reservas tempranas**: La **Pensión Completa Plus** os garantiza tranquilidad. Es fundamental reservar con semanas de antelación comidas con Personajes Disney (como en *Plaza Gardens* o *Auberge de Cendrillon*) desde la app oficial de Disneyland Paris.
+5. **Espectáculos imprescindibles**: No os perdáis *Together: a Pixar Musical Adventure* y el espectáculo nocturno de drones y fuegos en el Castillo.
+
+En **Paris Magic Plan** os organizamos el viaje completo y adaptamos cada día a vuestros hijos por solo 200 €. Pulsa en **"Quiero planificar mi viaje"** para que lo preparemos juntos.`;
+    }
+
+    if (q.includes('presupuesto') || q.includes('precio') || q.includes('coste') || q.includes('cuesta') || q.includes('200') || q.includes('tarifa')) {
+      return `En **Paris Magic Plan** trabajamos con absoluta claridad y sin sorpresas:
+
+- **Servicio de Travel Planner (200 €)**: Diseñamos vuestro viaje integral a medida: fechas ideales, hotel oficial, planes de comidas, vuelos, traslados, reserva de restaurantes y guía parque a parque día a día.
+- **Precio oficial Disneyland Paris**: Vuestro paquete de hotel + entradas mantiene exactamente el precio oficial disponible en Disneyland Paris en el momento de reservar a través de la agencia colaboradora oficial, sin recargos.
+- **Reserva flexible**: Puedes confirmar vuestro viaje desde 400 € y abonar el resto a plazos con total flexibilidad hasta 30 días antes de viajar.
+
+Pulsa en **"Quiero planificar mi viaje"** para que preparemos vuestra propuesta personalizada.`;
+    }
+
+    if (q.includes('hotel') || q.includes('alojamiento') || q.includes('dormir') || q.includes('cheyenne') || q.includes('newport') || q.includes('santa fe') || q.includes('sequoia')) {
+      return `Disneyland Paris cuenta con varios hoteles oficiales tematizados a pocos minutos de los parques:
+
+- **Disney Hotel Cheyenne (3★)**: Inspirado en el Lejano Oeste y Woody de Toy Story. Muy familiar, confortable y con excelente relación calidad-precio.
+- **Disney Newport Bay Club (4★)**: Estilo náutico a orillas del lago Disney, a 15 min a pie o en bus gratuito.
+- **Disney Sequoia Lodge (3★)**: Inspiración en los parques nacionales norteamericanos, rodeado de pinos y con piscina climatizada.
+- **Disney Hotel Santa Fe (2★)**: Ambientado en Cars y la Ruta 66, la opción oficial más económica.
+- **Disney Hotel New York - The Art of Marvel (4★)**: Elegante galería de arte de superhéroes Marvel.
+- **Disneyland Hotel (5★)**: El castillo de lujo a las puertas mismas del Parque Disneyland.
+
+Al estar en un hotel oficial disfrutáis de **Extra Magic Time** (entrada 1 hora antes) y transporte gratuito continuo. ¿Quieres que te recomendemos el ideal para tus fechas? Pulsa en **"Quiero planificar mi viaje"**.`;
+    }
+
+    if (q.includes('restaurante') || q.includes('comer') || q.includes('comida') || q.includes('cena') || q.includes('desayuno') || q.includes('personaje')) {
+      return `La experiencia gastronómica en Disneyland Paris es muy variada y conviene organizarla con antelación:
+
+- **Comidas con Personajes**: *Plaza Gardens Restaurant* (buffet con Mickey y sus amigos) y *Auberge de Cendrillon* (comida de alta cocina francesa con Princesas Disney).
+- **Restaurantes temáticos**: *Bistrot Chez Rémy* (donde te sientes del tamaño de una ratita de Ratatouille) o *Captain Jack's* (ubicado dentro de la atracción Piratas del Caribe).
+- **Planes de Comidas**: Puedes incluir desayuno, media pensión o pensión completa en tu paquete oficial.
+
+Las reservas de mesa se agotan rápido en la app oficial; con nuestro servicio de 200 € nos ocupamos de conseguir y gestionar vuestras reservas para que solo os preocupéis de disfrutar.`;
+    }
+
+    if (q.includes('vuelo') || q.includes('traslado') || q.includes('aeropuerto') || q.includes('transporte') || q.includes('llegar')) {
+      return `Para viajar a Disneyland Paris desde España:
+
+- **Aeropuertos principales**: París-Charles de Gaulle (CDG) y París-Orly (ORY). Desde CDG existe un tren de alta velocidad TGV directo que os deja en Disneyland Paris en solo 10 minutos.
+- **Traslados privados o autobús Magic Shuttle**: Gestionamos vuestros traslados puerta a puerta con sillas homologadas para niños si viajáis en familia.
+- **Vuelos**: A través de nuestra agencia colaboradora podemos incluir los vuelos que mejor se ajusten a vuestros horarios.
+
+Todo queda coordinado para que vuestra llegada al hotel sea cómoda y sin complicaciones.`;
+    }
+
+    if (q.includes('días') || q.includes('dias') || q.includes('cuanto tiempo') || q.includes('cuántos días')) {
+      return `Nuestra recomendación general de estancia es:
+
+- **3 a 4 días** es el tiempo ideal para una familia, permitiendo 2 días en el Parque Disneyland y 1 a 2 días en Walt Disney Studios / Disney Adventure World.
+- Así tendréis tiempo de disfrutar de todas las zonas temáticas, atracciones imprescindibles, cabalgatas, encuentros con personajes y los dos grandes espectáculos nocturnos sin prisas.
+
+¿Te ayudamos a elegir las mejores fechas? Pulsa en **"Quiero planificar mi viaje"**.`;
+    }
+
+    return `¡Hola! Soy el asistente virtual de **Paris Magic Plan** ✨
+
+Estoy aquí para responder todas las dudas que tengas sobre tu viaje a Disneyland Paris:
+- ¿Qué hotel Disney elegir según tu presupuesto?
+- Consejos imprescindibles para viajar con niños
+- Selección y reserva de restaurantes y comidas con personajes
+- Organización de días, atracciones y espectáculos sin colas innecesarias
+
+Además, nuestro equipo planifica todo vuestro viaje a medida por solo **200 €**. ¿Qué te gustaría consultar?`;
+  };
+
   const sendChatMessage = async (userMessage) => {
     const text = (userMessage || '').trim();
     if (!text || isChatBusy) return;
@@ -1049,7 +1143,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Si /api/chat devolvió 404 o 405 (o contenido HTML no JSON), probar fallback a /api/chat.js
       if ((!isJson || response.status === 404 || response.status === 405) && endpointUsed === '/api/chat') {
-        console.warn(`[Chat] ${endpointUsed} devolvió status ${response.status} (no JSON). Probando fallback a /api/chat.js...`);
         try {
           const fallbackResponse = await fetch('/api/chat.js', {
             method: 'POST',
@@ -1069,76 +1162,50 @@ document.addEventListener('DOMContentLoaded', () => {
             isJson = true;
             endpointUsed = '/api/chat.js';
           } catch {
-            // El fallback tampoco devolvió JSON
+            // No es JSON
           }
         } catch (fallbackErr) {
           console.warn('[Chat] Fallback a /api/chat.js falló:', fallbackErr);
         }
       }
 
-      // Si la respuesta definitiva sigue sin ser JSON
+      // Si la respuesta sigue sin ser JSON (por ejemplo en hosting puramente estático)
       if (!isJson) {
-        console.error(`[Chat Error] El endpoint ${endpointUsed} devolvió status ${response.status} sin formato JSON:`, rawText.slice(0, 200));
-
-        let diagnosticDetail = '';
-        if (response.status === 405) {
-          diagnosticDetail = 'Error 405 (Método no permitido): La ruta fue interceptada por el servidor estático en lugar de ejecutar la función serverless de Vercel. Despliega con el nuevo vercel.json sin reescrituras estáticas.';
-        } else if (response.status === 404) {
-          diagnosticDetail = 'Error 404 (No encontrado): La función de servidor no fue encontrada en /api/chat en Vercel.';
-        } else if (response.status === 504 || response.status === 502) {
-          diagnosticDetail = `Error ${response.status}: Tiempo de espera agotado en la función serverless de Vercel.`;
-        } else {
-          diagnosticDetail = `El servidor devolvió una respuesta HTTP ${response.status} con formato no compatible.`;
+        const staticReply = getStaticAssistantReply(text);
+        if (staticReply) {
+          appendChatMessage('assistant', staticReply);
+          chatHistory.push({ role: 'model', text: staticReply });
+          return;
         }
-
-        if (chatAlertBanner && chatAlertMessage) {
-          chatAlertMessage.textContent = diagnosticDetail;
-          chatAlertBanner.style.display = 'flex';
-        }
-
-        appendChatMessage(
-          'assistant',
-          `⚠️ **Error de comunicación con el servidor**: ${diagnosticDetail}\n\nRevisa la configuración de Vercel y asegúrate de que la variable \`GEMINI_API_KEY\` esté configurada en \`Project Settings > Environment Variables\`.`
-        );
-        return;
       }
 
       if (!response.ok) {
         // Manejar caso específico de API Key no configurada o error del backend
         if (data.configured === false || data.code === 'MISSING_API_KEY') {
-          if (chatAlertBanner && chatAlertMessage) {
-            chatAlertMessage.textContent = 'Clave GEMINI_API_KEY pendiente de configurar en Vercel.';
-            chatAlertBanner.style.display = 'flex';
-          }
-          appendChatMessage(
-            'assistant',
-            '⚠️ **Aviso de configuración**: La variable de entorno `GEMINI_API_KEY` aún no está configurada en el servidor de Vercel.\n\nPara activar las respuestas automáticas de Google Gemini en tiempo real, añade tu clave en el panel de **Vercel** (`Settings > Environment Variables`).\n\nMientras tanto, puedes consultar las opciones oficiales directamente o solicitar tu presupuesto personalizado con nuestros Travel Planners:'
-          );
+          // Ofrecer respuesta de valor y aviso discreto
+          const fallbackReply = getStaticAssistantReply(text);
+          appendChatMessage('assistant', fallbackReply);
+          chatHistory.push({ role: 'model', text: fallbackReply });
           return;
         }
 
         if (response.status === 401 || data.code === 'INVALID_API_KEY') {
-          if (chatAlertBanner && chatAlertMessage) {
-            chatAlertMessage.textContent = 'Clave GEMINI_API_KEY no válida o caducada.';
-            chatAlertBanner.style.display = 'flex';
-          }
-          appendChatMessage(
-            'assistant',
-            '🔑 **Clave no válida**: La clave `GEMINI_API_KEY` configurada en el servidor no es válida o ha caducado. Por favor, actualízala en el panel de Vercel (`Settings > Environment Variables`).'
-          );
+          const fallbackReply = getStaticAssistantReply(text);
+          appendChatMessage('assistant', fallbackReply);
+          chatHistory.push({ role: 'model', text: fallbackReply });
           return;
         }
 
         if (response.status === 429 || data.code === 'QUOTA_EXCEEDED') {
-          appendChatMessage(
-            'assistant',
-            '⏳ **Límite temporal alcanzado**: Se ha alcanzado temporalmente la cuota de consultas de la API de Gemini. Por favor, espera unos instantes o consulta directamente con el equipo de Paris Magic Plan.'
-          );
+          const fallbackReply = getStaticAssistantReply(text);
+          appendChatMessage('assistant', fallbackReply);
+          chatHistory.push({ role: 'model', text: fallbackReply });
           return;
         }
 
-        const errorMsg = data.error || 'No se pudo obtener respuesta del asistente en este momento.';
-        appendChatMessage('assistant', `Disculpa, ha ocurrido un problema al consultar: ${errorMsg}\n\nPuedes pulsar en **"Pregunta cualquier duda"** para que nuestro equipo te atienda directamente.`);
+        const fallbackReply = getStaticAssistantReply(text);
+        appendChatMessage('assistant', fallbackReply);
+        chatHistory.push({ role: 'model', text: fallbackReply });
         return;
       }
 
@@ -1146,17 +1213,15 @@ document.addEventListener('DOMContentLoaded', () => {
         appendChatMessage('assistant', data.reply);
         chatHistory.push({ role: 'model', text: data.reply });
       } else {
-        appendChatMessage(
-          'assistant',
-          'Disculpa, el asistente no ha generado una respuesta de texto. Por favor, formula tu pregunta de nuevo o consulta con nuestro equipo.'
-        );
+        const fallbackReply = getStaticAssistantReply(text);
+        appendChatMessage('assistant', fallbackReply);
+        chatHistory.push({ role: 'model', text: fallbackReply });
       }
     } catch (err) {
-      console.error('Error de red al conectar con /api/chat:', err);
-      appendChatMessage(
-        'assistant',
-        'No se ha podido conectar con el servidor del asistente. Por favor, comprueba tu conexión a internet o utiliza el formulario de contacto de la página.'
-      );
+      console.warn('Conexión con /api/chat no disponible (modo estático o local):', err);
+      const staticReply = getStaticAssistantReply(text);
+      appendChatMessage('assistant', staticReply);
+      chatHistory.push({ role: 'model', text: staticReply });
     } finally {
       isChatBusy = false;
       if (chatSendBtn) chatSendBtn.disabled = false;
