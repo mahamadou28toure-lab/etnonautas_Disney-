@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "cleanUrls": true,
   "functions": {
     "api/chat.js": {
       "maxDuration": 30
@@ -7,5 +8,15 @@
     "api/plan.js": {
       "maxDuration": 15
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/chat",
+      "destination": "/api/chat.js"
+    },
+    {
+      "source": "/api/plan",
+      "destination": "/api/plan.js"
+    }
+  ]
 }

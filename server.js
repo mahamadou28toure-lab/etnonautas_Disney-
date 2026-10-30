@@ -16,24 +16,26 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Rutas API del asistente y formulario de planificación
-app.all('/api/chat', async (req, res) => {
+app.all(['/api/chat', '/api/chat/', '/api/chat.js'], async (req, res) => {
   try {
     await chatHandler(req, res);
   } catch (err) {
     console.error('Error en /api/chat:', err);
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Error interno en el servidor.' });
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.status(500).json({ error: 'Error interno en el servidor.', code: 'INTERNAL_ERROR' });
     }
   }
 });
 
-app.all('/api/plan', async (req, res) => {
+app.all(['/api/plan', '/api/plan/', '/api/plan.js'], async (req, res) => {
   try {
     await planHandler(req, res);
   } catch (err) {
     console.error('Error en /api/plan:', err);
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Error interno en el servidor.' });
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.status(500).json({ error: 'Error interno en el servidor.', code: 'INTERNAL_ERROR' });
     }
   }
 });

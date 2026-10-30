@@ -1169,54 +1169,21 @@ Además, nuestro equipo planifica todo vuestro viaje a medida por solo **200 €
         }
       }
 
-      // Si la respuesta sigue sin ser JSON (por ejemplo en hosting puramente estático)
-      if (!isJson) {
-        const staticReply = getStaticAssistantReply(text);
-        if (staticReply) {
-          appendChatMessage('assistant', staticReply);
-          chatHistory.push({ role: 'model', text: staticReply });
-          return;
+      // Si el servidor devolvió una respuesta de texto con éxito (sea de Gemini o de la base de conocimiento)
+      if (data && typeof data.reply === 'string' && data.reply.trim().length > 0) {
+        appendChatMessage('assistant', data.reply);
+        chatHistory.push({ role: 'model', text: data.reply });
+        if (data.configured === false && chatAlertBanner && chatAlertMessage) {
+          chatAlertMessage.textContent = 'Clave GEMINI_API_KEY pendiente de configurar en Vercel (Project Settings > Environment Variables).';
+          chatAlertBanner.style.display = 'flex';
         }
-      }
-
-      if (!response.ok) {
-        // Manejar caso específico de API Key no configurada o error del backend
-        if (data.configured === false || data.code === 'MISSING_API_KEY') {
-          // Ofrecer respuesta de valor y aviso discreto
-          const fallbackReply = getStaticAssistantReply(text);
-          appendChatMessage('assistant', fallbackReply);
-          chatHistory.push({ role: 'model', text: fallbackReply });
-          return;
-        }
-
-        if (response.status === 401 || data.code === 'INVALID_API_KEY') {
-          const fallbackReply = getStaticAssistantReply(text);
-          appendChatMessage('assistant', fallbackReply);
-          chatHistory.push({ role: 'model', text: fallbackReply });
-          return;
-        }
-
-        if (response.status === 429 || data.code === 'QUOTA_EXCEEDED') {
-          const fallbackReply = getStaticAssistantReply(text);
-          appendChatMessage('assistant', fallbackReply);
-          chatHistory.push({ role: 'model', text: fallbackReply });
-          return;
-        }
-
-        const fallbackReply = getStaticAssistantReply(text);
-        appendChatMessage('assistant', fallbackReply);
-        chatHistory.push({ role: 'model', text: fallbackReply });
         return;
       }
 
-      if (data.reply && data.reply.trim()) {
-        appendChatMessage('assistant', data.reply);
-        chatHistory.push({ role: 'model', text: data.reply });
-      } else {
-        const fallbackReply = getStaticAssistantReply(text);
-        appendChatMessage('assistant', fallbackReply);
-        chatHistory.push({ role: 'model', text: fallbackReply });
-      }
+      // Si la respuesta fue 404, error HTTP o no JSON, recurrir a la base de conocimiento local
+      const staticReply = getStaticAssistantReply(text);
+      appendChatMessage('assistant', staticReply);
+      chatHistory.push({ role: 'model', text: staticReply });
     } catch (err) {
       console.warn('Conexión con /api/chat no disponible (modo estático o local):', err);
       const staticReply = getStaticAssistantReply(text);

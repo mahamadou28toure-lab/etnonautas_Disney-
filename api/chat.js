@@ -156,6 +156,78 @@ export default async function handler(req, res) {
     });
   }
 
+  // Base de conocimiento exhaustiva de Paris Magic Plan como respaldo fiable
+  const getFallbackResponse = (rawMsg) => {
+    const q = (rawMsg || '').toLowerCase();
+
+    if (q.includes('niñ') || q.includes('hijo') || q.includes('hija') || q.includes('bebé') || q.includes('peque') || q.includes('familia')) {
+      return `¡Viajar a Disneyland Paris con niños es una experiencia verdaderamente mágica! ✨
+
+Estas son nuestras recomendaciones clave para aprovechar el viaje al máximo con ellos:
+
+1. **Alojamiento temático y cómodo**: Te aconsejamos alojaros en un hotel oficial como **Disney Hotel Cheyenne** (ambientado en el Lejano Oeste con personajes de Toy Story) o **Disney Newport Bay Club** (junto al lago Disney y a solo 10-15 minutos a pie de los parques).
+2. **Entrada anticipada (Extra Magic Time)**: Al dormir en un hotel Disney tenéis acceso exclusivo 1 hora antes de la apertura oficial. Es el mejor momento del día para subir a Peter Pan's Flight, Dumbo o las atracciones de Fantasyland prácticamente sin colas.
+3. **Servicio Rider Switch (Baby Switch)**: Si vuestros peques no tienen la estatura mínima para ciertas atracciones (como Big Thunder Mountain o Space Mountain), este servicio permite a un adulto hacer la cola y que el otro disfrute después sin volver a esperar.
+4. **Plan de Comidas y Reservas tempranas**: La **Pensión Completa Plus** os garantiza tranquilidad. Es fundamental reservar con semanas de antelación comidas con Personajes Disney (como en *Plaza Gardens* o *Auberge de Cendrillon*) desde la app oficial de Disneyland Paris.
+5. **Espectáculos imprescindibles**: No os perdáis *Together: a Pixar Musical Adventure* y el espectáculo nocturno de drones y fuegos en el Castillo.
+
+En **Paris Magic Plan** os organizamos el viaje completo y adaptamos cada día a vuestros hijos por solo 200 €. Pulsa en **"Quiero planificar mi viaje"** para que lo preparemos juntos.`;
+    }
+
+    if (q.includes('presupuesto') || q.includes('precio') || q.includes('coste') || q.includes('cuesta') || q.includes('200') || q.includes('tarifa')) {
+      return `En **Paris Magic Plan** trabajamos con absoluta claridad y sin sorpresas:
+
+- **Servicio de Travel Planner (200 €)**: Diseñamos vuestro viaje integral a medida: fechas ideales, hotel oficial, planes de comidas, vuelos, traslados, reserva de restaurantes y guía parque a parque día a día.
+- **Precio oficial Disneyland Paris**: Vuestro paquete de hotel + entradas mantiene exactamente el precio oficial disponible en Disneyland Paris en el momento de reservar a través de la agencia colaboradora oficial, sin recargos.
+- **Reserva flexible**: Puedes confirmar vuestro viaje desde 400 € y abonar el resto a plazos con total flexibilidad hasta 30 días antes de viajar.
+
+Pulsa en **"Quiero planificar mi viaje"** para que preparemos vuestra propuesta personalizada.`;
+    }
+
+    if (q.includes('hotel') || q.includes('alojamiento') || q.includes('dormir') || q.includes('cheyenne') || q.includes('newport') || q.includes('santa fe') || q.includes('sequoia')) {
+      return `Disneyland Paris cuenta con varios hoteles oficiales tematizados a pocos minutos de los parques:
+
+- **Disney Hotel Cheyenne (3★)**: Inspirado en el Lejano Oeste y Woody de Toy Story. Muy familiar, confortable y con excelente relación calidad-precio.
+- **Disney Newport Bay Club (4★)**: Estilo náutico a orillas del lago Disney, a 15 min a pie o en bus gratuito.
+- **Disney Sequoia Lodge (3★)**: Inspiración en los parques nacionales norteamericanos, rodeado de pinos y con piscina climatizada.
+- **Disney Hotel Santa Fe (2★)**: Ambientado en Cars y la Ruta 66, la opción oficial más económica.
+- **Disney Hotel New York - The Art of Marvel (4★)**: Elegante galería de arte de superhéroes Marvel.
+- **Disneyland Hotel (5★)**: El castillo de lujo a las puertas mismas del Parque Disneyland.
+
+Al estar en un hotel oficial disfrutáis de **Extra Magic Time** (entrada 1 hora antes) y transporte gratuito continuo. ¿Quieres que te recomendemos el ideal para tus fechas? Pulsa en **"Quiero planificar mi viaje"**.`;
+    }
+
+    if (q.includes('restaurante') || q.includes('comer') || q.includes('comida') || q.includes('cena') || q.includes('desayuno') || q.includes('personaje')) {
+      return `La experiencia gastronómica en Disneyland Paris es muy variada y conviene organizarla con antelación:
+
+- **Comidas con Personajes**: *Plaza Gardens Restaurant* (buffet con Mickey y sus amigos) y *Auberge de Cendrillon* (comida de alta cocina francesa con Princesas Disney).
+- **Restaurantes temáticos**: *Bistrot Chez Rémy* (donde te sientes del tamaño de una ratita de Ratatouille) o *Captain Jack's* (ubicado dentro de la atracción Piratas del Caribe).
+- **Planes de Comidas**: Puedes incluir desayuno, media pensión o pensión completa en tu paquete oficial.
+
+Las reservas de mesa se agotan rápido en la app oficial; con nuestro servicio de 200 € nos ocupamos de conseguir y gestionar vuestras reservas para que solo os preocupéis de disfrutar.`;
+    }
+
+    if (q.includes('vuelo') || q.includes('traslado') || q.includes('aeropuerto') || q.includes('transporte') || q.includes('llegar')) {
+      return `Para viajar a Disneyland Paris desde España:
+
+- **Aeropuertos principales**: París-Charles de Gaulle (CDG) y París-Orly (ORY). Desde CDG existe un tren de alta velocidad TGV directo que os deja en Disneyland Paris en solo 10 minutos.
+- **Traslados privados o autobús Magic Shuttle**: Gestionamos vuestros traslados puerta a puerta con sillas homologadas para niños si viajáis en familia.
+- **Vuelos**: A través de nuestra agencia colaboradora podemos incluir los vuelos que mejor se ajusten a vuestros horarios.
+
+Todo queda coordinado para que vuestra llegada al hotel sea cómoda y sin complicaciones.`;
+    }
+
+    return `¡Hola! Soy el asistente virtual de **Paris Magic Plan** ✨
+
+Estoy aquí para guiarte y responder todas las dudas que tengas sobre la web o tu viaje a Disneyland Paris:
+- ¿Qué hotel Disney elegir según tu presupuesto?
+- Consejos y recomendaciones para viajar con niños
+- Selección y reserva de restaurantes y comidas con personajes
+- Organización de días, atracciones y espectáculos sin colas innecesarias
+
+Además, nuestro equipo planifica todo vuestro viaje a medida por solo **200 €**. ¿Qué te gustaría consultar?`;
+  };
+
   // Comprobar presencia de la API Key en el entorno del servidor
   const apiKey =
     process.env.GEMINI_API_KEY ||
@@ -165,11 +237,12 @@ export default async function handler(req, res) {
 
   if (!apiKey || apiKey.trim() === '' || apiKey === 'MY_GEMINI_API_KEY') {
     console.warn('[Diagnostics /api/chat]: Variable GEMINI_API_KEY no detectada en el entorno.');
-    return sendJson(res, 503, {
-      error:
-        'La clave de API de Google Gemini (GEMINI_API_KEY) no está configurada en las variables de entorno del servidor. Configúrala en el panel de Vercel (Project Settings > Environment Variables) para activar las respuestas con IA.',
+    return sendJson(res, 200, {
       configured: false,
       code: 'MISSING_API_KEY',
+      reply: getFallbackResponse(message),
+      note: 'Respuesta generada con la base de conocimiento oficial de Paris Magic Plan. Configura GEMINI_API_KEY en Vercel para activar Google Gemini en tiempo real.',
+      success: true,
     });
   }
 
@@ -211,9 +284,9 @@ export default async function handler(req, res) {
       },
     ];
 
-    // Intentar invocar el modelo recomendado gemini-3.8-flash, con fallback a gemini-2.5-flash y gemini-flash-latest
+    // Intentar invocar el modelo recomendado gemini-3.8-flash, con fallback a gemini-flash-latest y gemini-3.1-flash-lite
     let response;
-    const modelCandidates = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-flash-latest'];
+    const modelCandidates = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.1-flash-lite'];
     let lastError = null;
 
     for (const modelName of modelCandidates) {
@@ -223,8 +296,6 @@ export default async function handler(req, res) {
           contents: contents,
           config: {
             systemInstruction: SYSTEM_INSTRUCTION,
-            temperature: 0.6,
-            topP: 0.95,
           },
         });
         if (response) {
@@ -256,14 +327,16 @@ export default async function handler(req, res) {
       '';
 
     if (!replyText || replyText.trim() === '') {
-      return sendJson(res, 500, {
-        error: 'El asistente no generó texto en esta respuesta. Por favor, reformula tu consulta.',
-        code: 'EMPTY_RESPONSE',
+      return sendJson(res, 200, {
+        reply: getFallbackResponse(message),
+        configured: true,
+        success: true,
       });
     }
 
     return sendJson(res, 200, {
       reply: replyText.trim(),
+      configured: true,
       success: true,
     });
   } catch (error) {
@@ -275,10 +348,12 @@ export default async function handler(req, res) {
       errorMessage.includes('invalid API key') ||
       errorMessage.includes('API key not valid')
     ) {
-      return sendJson(res, 401, {
-        error: 'La clave GEMINI_API_KEY proporcionada no es válida o ha caducado. Revisa la configuración en Vercel.',
+      return sendJson(res, 200, {
         configured: false,
         code: 'INVALID_API_KEY',
+        reply: getFallbackResponse(message),
+        error: 'La clave GEMINI_API_KEY no es válida o ha caducado en el servidor.',
+        success: true,
       });
     }
 
@@ -287,15 +362,21 @@ export default async function handler(req, res) {
       errorMessage.includes('quota') ||
       errorMessage.includes('429')
     ) {
-      return sendJson(res, 429, {
-        error: 'Se ha superado temporalmente la cuota de la API de Gemini. Por favor, espera unos instantes o consulta directamente con el equipo de Paris Magic Plan.',
+      return sendJson(res, 200, {
+        configured: true,
         code: 'QUOTA_EXCEEDED',
+        reply: getFallbackResponse(message),
+        error: 'Límite de cuota alcanzado temporalmente en Gemini.',
+        success: true,
       });
     }
 
-    return sendJson(res, 500, {
-      error: 'Ha ocurrido un error al conectar con el asistente inteligente. Por favor, inténtalo de nuevo en unos momentos o utiliza el formulario de contacto.',
-      code: 'UPSTREAM_ERROR',
+    return sendJson(res, 200, {
+      reply: getFallbackResponse(message),
+      configured: true,
+      code: 'FALLBACK_GENERATED',
+      error: 'Respuesta generada por la base de conocimiento oficial.',
+      success: true,
     });
   }
 }
